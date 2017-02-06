@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <link href="css/style.css" type="text/css" rel="stylesheet">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+      <title>Code postal TO Ville</title>
+  </head>
+  <header>
+    <h1>Hello world !</h1>
+  </header>
+  <body>
+    <h2>Saisissez un code postal et obtenez le nom d'une ville</h2>
+      <form id="form" method="post">
+        <div class="form">
+            <input id="pCode" placeholder="ex: 94500" onchange="deleteItem()">
+            <button class="submit" type="submit">Envoyer</button>
+            <button class="submit" onclick="refreshPage()">Reinitialiser</button>
+        </div>
+        <div id="error">Code postal non reconnu</div>
+      </form>
+      <div class="list" id="List"></div>
+  </body>
+<script type='application/javascript'>
+
+function deleteItem() {
+    document.getElementById('List').innerHTML = "";
+}
+function refreshPage() {
+    window.setTimeout("location=('index.html');", 1);
+}
+        
+$('form').submit(function(e) {
+    e.preventDefault();
+    var pCode = $('#pCode').val();
+    if (pCode == "") {
+        pCode = 0;
+    }
+    $.ajax({
+        url : 'https://vicopo.selfbuild.fr/cherche/' + pCode,
+            type : 'GET',
+            dataType : 'html',
+            success : function(result, statut){
+            var parseObject = JSON.parse(result);
+            var getObject = JSON.stringify(parseObject.cities);
+            var getValues = JSON.parse(getObject);
+            var i = 0;
+                
+            if (getValues[0] == null) {
+                document.getElementById('error').style.visibility = "visible";
+                $('.error').append("Code postale non reconnu.");
+            } else {
+                document.getElementById('error').style.visibility = "hidden";
+               document.getElementById('List').style.visibility = "visible";
+                while (getValues[i] != null) {
+                    i++;
+                }
+                
+                var j = 0;
+                
+                while (j != i) {
+                    $('.list').append('<div class="showCity"><p>' + getValues[j].code + ' - ' + getValues[j].city +'</p></div>');
+                    j++
+                }
+            }
+        }
+    });
+});
+    
+</script>
+</html>
